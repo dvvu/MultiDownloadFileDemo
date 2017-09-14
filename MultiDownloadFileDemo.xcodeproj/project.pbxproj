@@ -1,0 +1,446 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 46;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		EAFB03FD1F6A857F00416CB4 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = EAFB03FC1F6A857F00416CB4 /* main.m */; };
+		EAFB04001F6A857F00416CB4 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = EAFB03FF1F6A857F00416CB4 /* AppDelegate.m */; };
+		EAFB04031F6A857F00416CB4 /* ViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = EAFB04021F6A857F00416CB4 /* ViewController.m */; };
+		EAFB04061F6A857F00416CB4 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = EAFB04041F6A857F00416CB4 /* Main.storyboard */; };
+		EAFB04091F6A857F00416CB4 /* MultiDownloadFileDemo.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = EAFB04071F6A857F00416CB4 /* MultiDownloadFileDemo.xcdatamodeld */; };
+		EAFB040B1F6A857F00416CB4 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = EAFB040A1F6A857F00416CB4 /* Assets.xcassets */; };
+		EAFB040E1F6A857F00416CB4 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = EAFB040C1F6A857F00416CB4 /* LaunchScreen.storyboard */; };
+		EAFB04191F6A857F00416CB4 /* MultiDownloadFileDemoTests.m in Sources */ = {isa = PBXBuildFile; fileRef = EAFB04181F6A857F00416CB4 /* MultiDownloadFileDemoTests.m */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		EAFB04151F6A857F00416CB4 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = EAFB03F01F6A857F00416CB4 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = EAFB03F71F6A857F00416CB4;
+			remoteInfo = MultiDownloadFileDemo;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXFileReference section */
+		EAFB03F81F6A857F00416CB4 /* MultiDownloadFileDemo.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = MultiDownloadFileDemo.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		EAFB03FC1F6A857F00416CB4 /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
+		EAFB03FE1F6A857F00416CB4 /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
+		EAFB03FF1F6A857F00416CB4 /* AppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
+		EAFB04011F6A857F00416CB4 /* ViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ViewController.h; sourceTree = "<group>"; };
+		EAFB04021F6A857F00416CB4 /* ViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ViewController.m; sourceTree = "<group>"; };
+		EAFB04051F6A857F00416CB4 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
+		EAFB04081F6A857F00416CB4 /* MultiDownloadFileDemo.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = MultiDownloadFileDemo.xcdatamodel; sourceTree = "<group>"; };
+		EAFB040A1F6A857F00416CB4 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		EAFB040D1F6A857F00416CB4 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
+		EAFB040F1F6A857F00416CB4 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		EAFB04141F6A857F00416CB4 /* MultiDownloadFileDemoTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = MultiDownloadFileDemoTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		EAFB04181F6A857F00416CB4 /* MultiDownloadFileDemoTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = MultiDownloadFileDemoTests.m; sourceTree = "<group>"; };
+		EAFB041A1F6A857F00416CB4 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		EAFB03F51F6A857F00416CB4 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		EAFB04111F6A857F00416CB4 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		EAFB03EF1F6A857F00416CB4 = {
+			isa = PBXGroup;
+			children = (
+				EAFB03FA1F6A857F00416CB4 /* MultiDownloadFileDemo */,
+				EAFB04171F6A857F00416CB4 /* MultiDownloadFileDemoTests */,
+				EAFB03F91F6A857F00416CB4 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		EAFB03F91F6A857F00416CB4 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				EAFB03F81F6A857F00416CB4 /* MultiDownloadFileDemo.app */,
+				EAFB04141F6A857F00416CB4 /* MultiDownloadFileDemoTests.xctest */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		EAFB03FA1F6A857F00416CB4 /* MultiDownloadFileDemo */ = {
+			isa = PBXGroup;
+			children = (
+				EAFB03FE1F6A857F00416CB4 /* AppDelegate.h */,
+				EAFB03FF1F6A857F00416CB4 /* AppDelegate.m */,
+				EAFB04011F6A857F00416CB4 /* ViewController.h */,
+				EAFB04021F6A857F00416CB4 /* ViewController.m */,
+				EAFB04041F6A857F00416CB4 /* Main.storyboard */,
+				EAFB040A1F6A857F00416CB4 /* Assets.xcassets */,
+				EAFB040C1F6A857F00416CB4 /* LaunchScreen.storyboard */,
+				EAFB040F1F6A857F00416CB4 /* Info.plist */,
+				EAFB04071F6A857F00416CB4 /* MultiDownloadFileDemo.xcdatamodeld */,
+				EAFB03FB1F6A857F00416CB4 /* Supporting Files */,
+			);
+			path = MultiDownloadFileDemo;
+			sourceTree = "<group>";
+		};
+		EAFB03FB1F6A857F00416CB4 /* Supporting Files */ = {
+			isa = PBXGroup;
+			children = (
+				EAFB03FC1F6A857F00416CB4 /* main.m */,
+			);
+			name = "Supporting Files";
+			sourceTree = "<group>";
+		};
+		EAFB04171F6A857F00416CB4 /* MultiDownloadFileDemoTests */ = {
+			isa = PBXGroup;
+			children = (
+				EAFB04181F6A857F00416CB4 /* MultiDownloadFileDemoTests.m */,
+				EAFB041A1F6A857F00416CB4 /* Info.plist */,
+			);
+			path = MultiDownloadFileDemoTests;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		EAFB03F71F6A857F00416CB4 /* MultiDownloadFileDemo */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = EAFB041D1F6A857F00416CB4 /* Build configuration list for PBXNativeTarget "MultiDownloadFileDemo" */;
+			buildPhases = (
+				EAFB03F41F6A857F00416CB4 /* Sources */,
+				EAFB03F51F6A857F00416CB4 /* Frameworks */,
+				EAFB03F61F6A857F00416CB4 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = MultiDownloadFileDemo;
+			productName = MultiDownloadFileDemo;
+			productReference = EAFB03F81F6A857F00416CB4 /* MultiDownloadFileDemo.app */;
+			productType = "com.apple.product-type.application";
+		};
+		EAFB04131F6A857F00416CB4 /* MultiDownloadFileDemoTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = EAFB04201F6A857F00416CB4 /* Build configuration list for PBXNativeTarget "MultiDownloadFileDemoTests" */;
+			buildPhases = (
+				EAFB04101F6A857F00416CB4 /* Sources */,
+				EAFB04111F6A857F00416CB4 /* Frameworks */,
+				EAFB04121F6A857F00416CB4 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				EAFB04161F6A857F00416CB4 /* PBXTargetDependency */,
+			);
+			name = MultiDownloadFileDemoTests;
+			productName = MultiDownloadFileDemoTests;
+			productReference = EAFB04141F6A857F00416CB4 /* MultiDownloadFileDemoTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		EAFB03F01F6A857F00416CB4 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				LastUpgradeCheck = 0830;
+				ORGANIZATIONNAME = "Doan Van Vu";
+				TargetAttributes = {
+					EAFB03F71F6A857F00416CB4 = {
+						CreatedOnToolsVersion = 8.3.3;
+						ProvisioningStyle = Automatic;
+					};
+					EAFB04131F6A857F00416CB4 = {
+						CreatedOnToolsVersion = 8.3.3;
+						ProvisioningStyle = Automatic;
+						TestTargetID = EAFB03F71F6A857F00416CB4;
+					};
+				};
+			};
+			buildConfigurationList = EAFB03F31F6A857F00416CB4 /* Build configuration list for PBXProject "MultiDownloadFileDemo" */;
+			compatibilityVersion = "Xcode 3.2";
+			developmentRegion = English;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+			);
+			mainGroup = EAFB03EF1F6A857F00416CB4;
+			productRefGroup = EAFB03F91F6A857F00416CB4 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				EAFB03F71F6A857F00416CB4 /* MultiDownloadFileDemo */,
+				EAFB04131F6A857F00416CB4 /* MultiDownloadFileDemoTests */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		EAFB03F61F6A857F00416CB4 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				EAFB040E1F6A857F00416CB4 /* LaunchScreen.storyboard in Resources */,
+				EAFB040B1F6A857F00416CB4 /* Assets.xcassets in Resources */,
+				EAFB04061F6A857F00416CB4 /* Main.storyboard in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		EAFB04121F6A857F00416CB4 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		EAFB03F41F6A857F00416CB4 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				EAFB04031F6A857F00416CB4 /* ViewController.m in Sources */,
+				EAFB04001F6A857F00416CB4 /* AppDelegate.m in Sources */,
+				EAFB04091F6A857F00416CB4 /* MultiDownloadFileDemo.xcdatamodeld in Sources */,
+				EAFB03FD1F6A857F00416CB4 /* main.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		EAFB04101F6A857F00416CB4 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				EAFB04191F6A857F00416CB4 /* MultiDownloadFileDemoTests.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		EAFB04161F6A857F00416CB4 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = EAFB03F71F6A857F00416CB4 /* MultiDownloadFileDemo */;
+			targetProxy = EAFB04151F6A857F00416CB4 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin PBXVariantGroup section */
+		EAFB04041F6A857F00416CB4 /* Main.storyboard */ = {
+			isa = PBXVariantGroup;
+			children = (
+				EAFB04051F6A857F00416CB4 /* Base */,
+			);
+			name = Main.storyboard;
+			sourceTree = "<group>";
+		};
+		EAFB040C1F6A857F00416CB4 /* LaunchScreen.storyboard */ = {
+			isa = PBXVariantGroup;
+			children = (
+				EAFB040D1F6A857F00416CB4 /* Base */,
+			);
+			name = LaunchScreen.storyboard;
+			sourceTree = "<group>";
+		};
+/* End PBXVariantGroup section */
+
+/* Begin XCBuildConfiguration section */
+		EAFB041B1F6A857F00416CB4 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 10.3;
+				MTL_ENABLE_DEBUG_INFO = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		EAFB041C1F6A857F00416CB4 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 10.3;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		EAFB041E1F6A857F00416CB4 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				INFOPLIST_FILE = MultiDownloadFileDemo/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = VNG.MultiDownloadFileDemo;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Debug;
+		};
+		EAFB041F1F6A857F00416CB4 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				INFOPLIST_FILE = MultiDownloadFileDemo/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = VNG.MultiDownloadFileDemo;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Release;
+		};
+		EAFB04211F6A857F00416CB4 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				INFOPLIST_FILE = MultiDownloadFileDemoTests/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = VNG.MultiDownloadFileDemoTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/MultiDownloadFileDemo.app/MultiDownloadFileDemo";
+			};
+			name = Debug;
+		};
+		EAFB04221F6A857F00416CB4 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				INFOPLIST_FILE = MultiDownloadFileDemoTests/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = VNG.MultiDownloadFileDemoTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/MultiDownloadFileDemo.app/MultiDownloadFileDemo";
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		EAFB03F31F6A857F00416CB4 /* Build configuration list for PBXProject "MultiDownloadFileDemo" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				EAFB041B1F6A857F00416CB4 /* Debug */,
+				EAFB041C1F6A857F00416CB4 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		EAFB041D1F6A857F00416CB4 /* Build configuration list for PBXNativeTarget "MultiDownloadFileDemo" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				EAFB041E1F6A857F00416CB4 /* Debug */,
+				EAFB041F1F6A857F00416CB4 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+		};
+		EAFB04201F6A857F00416CB4 /* Build configuration list for PBXNativeTarget "MultiDownloadFileDemoTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				EAFB04211F6A857F00416CB4 /* Debug */,
+				EAFB04221F6A857F00416CB4 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+		};
+/* End XCConfigurationList section */
+
+/* Begin XCVersionGroup section */
+		EAFB04071F6A857F00416CB4 /* MultiDownloadFileDemo.xcdatamodeld */ = {
+			isa = XCVersionGroup;
+			children = (
+				EAFB04081F6A857F00416CB4 /* MultiDownloadFileDemo.xcdatamodel */,
+			);
+			currentVersion = EAFB04081F6A857F00416CB4 /* MultiDownloadFileDemo.xcdatamodel */;
+			path = MultiDownloadFileDemo.xcdatamodeld;
+			sourceTree = "<group>";
+			versionGroupType = wrapper.xcdatamodel;
+		};
+/* End XCVersionGroup section */
+	};
+	rootObject = EAFB03F01F6A857F00416CB4 /* Project object */;
+}

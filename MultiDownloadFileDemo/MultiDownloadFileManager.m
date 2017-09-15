@@ -21,6 +21,10 @@
 @property (nonatomic) dispatch_queue_t removeItemQueue;
 @property (nonatomic) NSURLSession* downloadSession;
 
+@property (nonatomic) int currentActiveDownloadTasks;
+@property (nonatomic) int pendingDownloadTasks;
+@property (nonatomic) int resumeDownloadTasks;
+
 @end
 
 @implementation MultiDownloadFileManager
@@ -161,7 +165,9 @@
             DownloadFileItem* nextDownloadFileItem = [_pendingDownloadItems objectAtIndex:0];
             [nextDownloadFileItem.downloadTask resume];
             
+            _currentActiveDownloadTasks += 1;
             [_currentActiveDownloadItems setObject:nextDownloadFileItem forKey:nextDownloadFileItem.identifier];
+            _pendingDownloadTasks -= 1;
             [_pendingDownloadItems removeObject:nextDownloadFileItem];
         }
     }
@@ -190,6 +196,8 @@
             downloadFileItem.infoFileDownloadBlock(downloadFileItem);
         });
     }
+    
+    NSLog(@"c: %d, p: %d, r: %d",_currentActiveDownloadTasks, _pendingDownloadTasks, _resumeDownloadTasks);
 }
 
 #pragma mark - NSURLSessionTaskDelegate
@@ -214,10 +222,12 @@
             if ([_resumeDownloadItems filteredArrayUsingPredicate:predicate].count > 0) {
                 
                 downloaderItem = [_resumeDownloadItems filteredArrayUsingPredicate:predicate][0];
+                _resumeDownloadTasks -= 1;
                 [_resumeDownloadItems removeObject:downloaderItem];
             }
         } else {
             
+            _currentActiveDownloadTasks -= 1;
             [_currentActiveDownloadItems removeObjectForkey:identifier];
         }
         
@@ -269,12 +279,14 @@
     downloadFileItem.downloadItemStatus = DownloadItemStatusPending;
     
     if (_currentActiveDownloadItems.count >= _currentDownloadMaximum) {
-        
+       
         NSLog(@"pending..... %@",downloadFileItem.identifier);
+        _pendingDownloadTasks += 1;
         [_pendingDownloadItems addObject:downloadFileItem];
     } else {
         
         [downloadFileItem.downloadTask resume];
+        _currentActiveDownloadTasks += 1;
         [_currentActiveDownloadItems setObject:downloadFileItem forKey:downloadFileItem.identifier];
     }
     
@@ -297,6 +309,7 @@
     if (downloadFileItem) {
         
         // cancel activeList
+        _currentActiveDownloadTasks -= 1;
         [_currentActiveDownloadItems removeObjectForkey:fileIdentifier];
         
         if (_pendingDownloadItems.count > 0) {
@@ -305,8 +318,11 @@
             
             nextdDownloadFileItem.downloadItemStatus = DownloadItemStatusStarted;
             [nextdDownloadFileItem.downloadTask resume];
+          
             [_currentActiveDownloadItems setObject:nextdDownloadFileItem forKey:nextdDownloadFileItem.identifier];
             [_pendingDownloadItems removeObject:nextdDownloadFileItem];
+            _currentActiveDownloadTasks += 1;
+            _pendingDownloadTasks -= 1;
         }
         
         downloadFileItem.downloadItemStatus = DownloadItemStatusCancelled;
@@ -339,7 +355,7 @@
                     downloadFileItem.infoFileDownloadBlock(downloadFileItem);
                 });
             }
-            
+            _pendingDownloadTasks -= 1;
             [_pendingDownloadItems removeObject:downloadFileItem];
         } else {
             
@@ -360,6 +376,8 @@
                         downloadFileItem.infoFileDownloadBlock(downloadFileItem);
                     });
                 }
+                
+                _resumeDownloadTasks -= 1;
                 [_resumeDownloadItems removeObject:downloadFileItem];
             }
         }
@@ -388,9 +406,11 @@
             });
         }
         // add into resumeList
+        _resumeDownloadTasks += 1;
         [_resumeDownloadItems addObject:downloadFileItem];
         
         // remove out of activeList
+        _currentActiveDownloadTasks -= 1;
         [_currentActiveDownloadItems removeObjectForkey:fileIdentifier];
         
         // check PendingList exits -> run next task.
@@ -399,9 +419,11 @@
             DownloadFileItem* nextDownloadFileItem = [_pendingDownloadItems objectAtIndex:0];
             nextDownloadFileItem.downloadItemStatus = DownloadItemStatusStarted;
             [nextDownloadFileItem.downloadTask resume];
+            _currentActiveDownloadTasks += 1;
             [_currentActiveDownloadItems setObject:nextDownloadFileItem forKey:nextDownloadFileItem.identifier];
             
             //remove out of pendingList
+            _pendingDownloadTasks -= 1;
             [_pendingDownloadItems removeObject:nextDownloadFileItem];
         }
     } else {
@@ -424,9 +446,11 @@
                 });
             }
             // add into resumeList
+            _resumeDownloadTasks += 1;
             [_resumeDownloadItems addObject:pendingDownloadFileItem];
             
             //remove out of pendingList
+            _pendingDownloadTasks -= 1;
             [_pendingDownloadItems removeObject:pendingDownloadFileItem];
         }
     }
@@ -455,16 +479,21 @@
                     currentActiveTask.infoFileDownloadBlock(currentActiveTask);
                 });
             }
+            _currentActiveDownloadTasks += 1;
             [_currentActiveDownloadItems removeObjectForkey:currentActiveTask.identifier];
             
             // add into resumeList
+            _resumeDownloadTasks += 1;
             [_resumeDownloadItems addObject:currentActiveTask];
         }
         
         DownloadFileItem* downloadFileItem = [_resumeDownloadItems filteredArrayUsingPredicate:predicate][0];
         downloadFileItem.downloadItemStatus = DownloadItemStatusStarted;
         [downloadFileItem.downloadTask resume];
+        
+        _currentActiveDownloadTasks += 1;
         [_currentActiveDownloadItems setObject:downloadFileItem forKey:downloadFileItem.identifier];
+        _resumeDownloadTasks -= 1;
         [_resumeDownloadItems removeObject:downloadFileItem];
     }
 }

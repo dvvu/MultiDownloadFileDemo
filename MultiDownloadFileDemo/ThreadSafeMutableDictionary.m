@@ -26,7 +26,7 @@
     if (self) {
         
         _threadSafeDictionary = [[NSMutableDictionary alloc]init];
-        _threadSafeDictionaryQueue = dispatch_queue_create("threadSafeDictionar_Queue", NULL);
+        _threadSafeDictionaryQueue = dispatch_queue_create("threadSafeDictionar_Queue", DISPATCH_QUEUE_CONCURRENT);
     }
 
     return self;
@@ -50,7 +50,7 @@
 
 - (void)setObject:(id)object forKey:(id<NSCopying>)key {
     
-    dispatch_async(_threadSafeDictionaryQueue, ^{
+     dispatch_barrier_async(_threadSafeDictionaryQueue, ^{
         
         _threadSafeDictionary[key] = object;
     });
@@ -60,7 +60,7 @@
 
 - (void)removeObjectForkey:(NSString *)key {
     
-    dispatch_async(_threadSafeDictionaryQueue, ^{
+     dispatch_barrier_async(_threadSafeDictionaryQueue, ^{
         
         [_threadSafeDictionary removeObjectForKey:key];
     });
@@ -70,7 +70,7 @@
 
 - (void)removeAllObjects {
     
-    dispatch_async(_threadSafeDictionaryQueue, ^{
+     dispatch_barrier_async(_threadSafeDictionaryQueue, ^{
         
         [_threadSafeDictionary removeAllObjects];
     });

@@ -19,11 +19,21 @@
     // Do any additional setup after loading the view, typically from a nib.
 }
 
-
-- (void)didReceiveMemoryWarning {
-    [super didReceiveMemoryWarning];
-    // Dispose of any resources that can be recreated.
++ (void)showConnectInternetAlert:(UIViewController *)controller withTitle:(NSString *)title andMessage:(NSString *)message {
+    
+    UIAlertController* alert = [UIAlertController alertControllerWithTitle:title message:message preferredStyle:UIAlertControllerStyleAlert];
+    
+    UIAlertAction* yesButton = [UIAlertAction actionWithTitle:@"OK" style:UIAlertActionStyleDefault handler:^(UIAlertAction* action) {
+        
+        [[UIApplication sharedApplication] openURL:[NSURL URLWithString:@"prefs:root=WIFI"]];
+    }];
+    
+    [alert addAction:yesButton];
+    
+    dispatch_async(dispatch_get_main_queue(), ^{
+        
+        [controller presentViewController:alert animated:YES completion:nil];
+    });
 }
-
 
 @end

@@ -10,6 +10,7 @@
 
 @interface ViewController : UIViewController
 
++ (void)showConnectInternetAlert:(UIViewController *)controller withTitle:(NSString *)title andMessage:(NSString *)message;
 
 @end
 

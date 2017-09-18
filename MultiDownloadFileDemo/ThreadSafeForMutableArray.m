@@ -26,7 +26,7 @@
     if (self) {
         
         _threadSafeArray = [[NSMutableArray alloc]init];
-        _threadSafeForArrayQueue = dispatch_queue_create("ThreadSafeForArray_Queue", NULL);
+        _threadSafeForArrayQueue = dispatch_queue_create("ThreadSafeForArray_Queue", DISPATCH_QUEUE_CONCURRENT);
     }
     return self;
 }
@@ -41,7 +41,7 @@
         return;
     }
     
-    dispatch_async(_threadSafeForArrayQueue, ^{
+    dispatch_barrier_async(_threadSafeForArrayQueue, ^{
         
         [_threadSafeArray addObject:object];
     });
@@ -57,7 +57,7 @@
         return;
     }
     
-    dispatch_async(_threadSafeForArrayQueue, ^{
+    dispatch_barrier_async(_threadSafeForArrayQueue, ^{
         
         [_threadSafeArray removeObject:object];
     });
@@ -75,7 +75,7 @@
         return;
     }
     
-    dispatch_async(_threadSafeForArrayQueue, ^{
+    dispatch_barrier_async(_threadSafeForArrayQueue, ^{
         
         [_threadSafeArray removeObjectAtIndex:index];
     });
@@ -113,6 +113,7 @@
         
         count = [_threadSafeArray count];
     });
+    
     return count;
 }
 
@@ -126,7 +127,20 @@
         
         result = [_threadSafeArray filteredArrayUsingPredicate:predicate];
     });
+    
     return result;
+}
+
+#pragma mark - enumerateObjectsUsingBlock
+
+- (void)enumerateObjectsUsingBlock:(void (^)(id object, NSUInteger idx, BOOL* stop))block {
+    
+    NSArray* array = _threadSafeArray;
+    
+    dispatch_sync(_threadSafeForArrayQueue, ^{
+        
+        [array enumerateObjectsUsingBlock:block];
+    });
 }
 
 @end

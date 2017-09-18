@@ -210,10 +210,7 @@
         cellObject.process = 0.0;
         cellObject.taskStatus = DownloadItemStatusCancelled;
         cellObject.taskDetail = @"";
-        dispatch_async(dispatch_get_main_queue(), ^ {
-            
-            [cell setModel:cellObject];
-        });
+        [cell setModel:cellObject];
     } else if (downloadFileItem.downloadItemStatus == DownloadItemStatusPending) {
         
         cellObject.taskStatus = DownloadItemStatusPending;

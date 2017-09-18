@@ -14,9 +14,7 @@
 
 @interface MultiDownloadFileManager () <NSURLSessionDelegate, NSURLSessionDownloadDelegate>
 
-@property (nonatomic) ThreadSafeMutableDictionary* currentActiveDownloadItems;
-@property (nonatomic) ThreadSafeForMutableArray* pendingDownloadItems;
-@property (nonatomic) ThreadSafeForMutableArray* resumeDownloadItems;
+@property (nonatomic) ThreadSafeForMutableArray* downloadFileItems;
 @property (nonatomic) dispatch_queue_t createDirectoryQueue;
 @property (nonatomic) dispatch_queue_t removeItemQueue;
 @property (nonatomic) NSURLSession* downloadSession;
@@ -78,9 +76,7 @@
     
     dispatch_semaphore_wait(semaphore, DISPATCH_TIME_FOREVER);
     
-    _currentActiveDownloadItems = [[ThreadSafeMutableDictionary alloc] init];
-    _pendingDownloadItems = [[ThreadSafeForMutableArray alloc] init];
-    _resumeDownloadItems = [[ThreadSafeForMutableArray alloc] init];
+    _downloadFileItems = [[ThreadSafeForMutableArray alloc] init];
     _removeItemQueue = dispatch_queue_create("REMOVEITEM_QUEUE", DISPATCH_QUEUE_SERIAL);
     _createDirectoryQueue = dispatch_queue_create("CREATE_DIRECTORY_QUEUE", DISPATCH_QUEUE_SERIAL);
     _currentDownloadMaximum = 1;
@@ -129,7 +125,13 @@
 - (void)URLSession:(NSURLSession *)session downloadTask:(NSURLSessionDownloadTask *)downloadTask didFinishDownloadingToURL:(NSURL *)location {
     
     NSString* identifier = [NSString stringWithFormat:@"%lud",(unsigned long)[downloadTask taskIdentifier]];
-    DownloadFileItem* downloadFileItem = [_currentActiveDownloadItems getObjectForKey:identifier];
+    NSPredicate* predicate = [NSPredicate predicateWithFormat:@"identifier contains[cd] %@", identifier];
+    
+    if ([[_downloadFileItems filteredArrayUsingPredicate:predicate] count] <= 0) {
+        
+        return;
+    }
+    DownloadFileItem* downloadFileItem = [_downloadFileItems filteredArrayUsingPredicate:predicate][0];
     
     if (downloadFileItem) {
         
@@ -152,23 +154,33 @@
         if (downloadFileItem.infoFileDownloadBlock) {
             
             downloadFileItem.downloadItemStatus = DownloadItemStatusCompleted;
+            _currentActiveDownloadTasks -= 1;
+            
             dispatch_async(dispatch_get_main_queue(), ^(void) {
                 
                 downloadFileItem.infoFileDownloadBlock(downloadFileItem);
+                [_downloadFileItems removeObject:downloadFileItem];
             });
         }
         
-        [_currentActiveDownloadItems removeObjectForkey:identifier];
-        
-        if(_pendingDownloadItems.count > 0) {
+        if (_pendingDownloadTasks > 0 && _currentActiveDownloadTasks < _currentDownloadMaximum) {
             
-            DownloadFileItem* nextDownloadFileItem = [_pendingDownloadItems objectAtIndex:0];
+            __block DownloadFileItem* nextDownloadFileItem;
+            
+            [_downloadFileItems enumerateObjectsUsingBlock:^(id object, NSUInteger idx, BOOL* stop) {
+                
+                DownloadFileItem* downloadFileItem = object;
+                
+                if (downloadFileItem.downloadItemStatus == DownloadItemStatusPending) {
+                    
+                    nextDownloadFileItem = downloadFileItem;
+                    return;
+                }
+            }];
+            
             [nextDownloadFileItem.downloadTask resume];
-            
             _currentActiveDownloadTasks += 1;
-            [_currentActiveDownloadItems setObject:nextDownloadFileItem forKey:nextDownloadFileItem.identifier];
             _pendingDownloadTasks -= 1;
-            [_pendingDownloadItems removeObject:nextDownloadFileItem];
         }
     }
 }
@@ -178,7 +190,13 @@
 - (void)URLSession:(NSURLSession *)session downloadTask:(NSURLSessionDownloadTask *)downloadTask didWriteData:(int64_t)bytesWritten totalBytesWritten:(int64_t)totalBytesWritten totalBytesExpectedToWrite:(int64_t)totalBytesExpectedToWrite {
  
     NSString* identifier = [NSString stringWithFormat:@"%lud",(unsigned long)[downloadTask taskIdentifier]];
-    DownloadFileItem* downloadFileItem = [_currentActiveDownloadItems getObjectForKey:identifier];
+    NSPredicate* predicate = [NSPredicate predicateWithFormat:@"identifier contains[cd] %@", identifier];
+   
+    if ([[_downloadFileItems filteredArrayUsingPredicate:predicate] count] <= 0) {
+        
+        return;
+    }
+    DownloadFileItem* downloadFileItem = [_downloadFileItems filteredArrayUsingPredicate:predicate][0];
     
     if (downloadFileItem.downloadItemStatus == DownloadItemStatusPending) {
         
@@ -187,6 +205,7 @@
     
     downloadFileItem.byteRecives = bytesWritten;
     downloadFileItem.totalbyteRecives = totalBytesWritten;
+    
     downloadFileItem.totalBytes = totalBytesExpectedToWrite;
     
     if (downloadFileItem.infoFileDownloadBlock) {
@@ -209,26 +228,27 @@
         return;
     }
     
+    // check again.
     NSString* identifier = [NSString stringWithFormat:@"%lud",(unsigned long)[downloadTask taskIdentifier]];
     
     if (identifier) {
         
-        DownloadFileItem* downloaderItem = [_currentActiveDownloadItems getObjectForKey:identifier];
+        NSPredicate* predicate = [NSPredicate predicateWithFormat:@"identifier contains[cd] %@", identifier];
         
-        if (!downloaderItem) {
+        if ([[_downloadFileItems filteredArrayUsingPredicate:predicate] count] <= 0) {
             
-            NSPredicate* predicate = [NSPredicate predicateWithFormat:@"identifier contains[cd] %@", identifier];
+            return;
+        }
+        
+        DownloadFileItem* downloadFileItem = [_downloadFileItems filteredArrayUsingPredicate:predicate][0];
+        
+        if (downloadFileItem.downloadItemStatus == DownloadItemStatusPaused) {
             
-            if ([_resumeDownloadItems filteredArrayUsingPredicate:predicate].count > 0) {
-                
-                downloaderItem = [_resumeDownloadItems filteredArrayUsingPredicate:predicate][0];
-                _resumeDownloadTasks -= 1;
-                [_resumeDownloadItems removeObject:downloaderItem];
-            }
+            [_downloadFileItems removeObject:downloadFileItem];
+            _resumeDownloadTasks -= 1;
         } else {
             
-            _currentActiveDownloadTasks -= 1;
-            [_currentActiveDownloadItems removeObjectForkey:identifier];
+            [_downloadFileItems removeObject:downloadFileItem];
         }
         
         switch ([error code]) {
@@ -278,17 +298,17 @@
     downloadFileItem.fileName = [sourceURL lastPathComponent];
     downloadFileItem.downloadItemStatus = DownloadItemStatusPending;
     
-    if (_currentActiveDownloadItems.count >= _currentDownloadMaximum) {
-       
-        NSLog(@"pending..... %@",downloadFileItem.identifier);
+    
+    if (_currentActiveDownloadTasks >= _currentDownloadMaximum) {
+        
         _pendingDownloadTasks += 1;
-        [_pendingDownloadItems addObject:downloadFileItem];
     } else {
         
-        [downloadFileItem.downloadTask resume];
         _currentActiveDownloadTasks += 1;
-        [_currentActiveDownloadItems setObject:downloadFileItem forKey:downloadFileItem.identifier];
+        [downloadFileItem.downloadTask resume];
     }
+    
+    [_downloadFileItems addObject:downloadFileItem];
     
     // callback to update UI
     if (downloadFileItem.infoFileDownloadBlock) {
@@ -304,25 +324,21 @@
 
 - (void)cancelDownloadForUrl:(NSString *)fileIdentifier {
     
-    DownloadFileItem* downloadFileItem = [_currentActiveDownloadItems getObjectForKey:fileIdentifier];
+    NSPredicate* predicate = [NSPredicate predicateWithFormat:@"identifier contains[cd] %@", fileIdentifier];
+    DownloadFileItem* downloadFileItem = [_downloadFileItems filteredArrayUsingPredicate:predicate][0];
     
     if (downloadFileItem) {
         
         // cancel activeList
-        _currentActiveDownloadTasks -= 1;
-        [_currentActiveDownloadItems removeObjectForkey:fileIdentifier];
-        
-        if (_pendingDownloadItems.count > 0) {
+        if (downloadFileItem.downloadItemStatus == DownloadItemStatusPaused) {
             
-            DownloadFileItem* nextdDownloadFileItem = [_pendingDownloadItems objectAtIndex:0];
+            _resumeDownloadTasks -= 1;
+        } else  if (downloadFileItem.downloadItemStatus == DownloadItemStatusPending) {
             
-            nextdDownloadFileItem.downloadItemStatus = DownloadItemStatusStarted;
-            [nextdDownloadFileItem.downloadTask resume];
-          
-            [_currentActiveDownloadItems setObject:nextdDownloadFileItem forKey:nextdDownloadFileItem.identifier];
-            [_pendingDownloadItems removeObject:nextdDownloadFileItem];
-            _currentActiveDownloadTasks += 1;
             _pendingDownloadTasks -= 1;
+        } else if (downloadFileItem.downloadItemStatus == DownloadItemStatusStarted) {
+            
+            _currentActiveDownloadTasks -= 1;
         }
         
         downloadFileItem.downloadItemStatus = DownloadItemStatusCancelled;
@@ -334,52 +350,28 @@
             dispatch_async(dispatch_get_main_queue(), ^(void) {
                 
                 downloadFileItem.infoFileDownloadBlock(downloadFileItem);
+                [_downloadFileItems removeObject:downloadFileItem];
             });
         }
-    } else {
         
-        NSPredicate* predicate = [NSPredicate predicateWithFormat:@"identifier contains[cd] %@", fileIdentifier];
-        
-        if ([_pendingDownloadItems filteredArrayUsingPredicate:predicate].count > 0) {
+        if (_pendingDownloadTasks > 0 && _currentActiveDownloadTasks < _currentDownloadMaximum) {
             
-            // cancel pendingList
-            downloadFileItem = [_pendingDownloadItems filteredArrayUsingPredicate:predicate][0];
-            downloadFileItem.downloadItemStatus = DownloadItemStatusCancelled;
-            [downloadFileItem.downloadTask cancel];
+            __block DownloadFileItem* nextDownloadFileItem;
             
-            // callback to update UI
-            if (downloadFileItem.infoFileDownloadBlock) {
+            [_downloadFileItems enumerateObjectsUsingBlock:^(id object, NSUInteger idx, BOOL* stop) {
                 
-                dispatch_async(dispatch_get_main_queue(), ^(void) {
-                    
-                    downloadFileItem.infoFileDownloadBlock(downloadFileItem);
-                });
-            }
-            _pendingDownloadTasks -= 1;
-            [_pendingDownloadItems removeObject:downloadFileItem];
-        } else {
-            
-            NSPredicate* predicate = [NSPredicate predicateWithFormat:@"identifier contains[cd] %@", fileIdentifier];
-            
-            // cancel resumeList
-            if ([_resumeDownloadItems filteredArrayUsingPredicate:predicate].count > 0) {
+                DownloadFileItem* downloadFileItem = object;
                 
-                downloadFileItem = [_resumeDownloadItems filteredArrayUsingPredicate:predicate][0];
-                downloadFileItem.downloadItemStatus = DownloadItemStatusCancelled;
-                [downloadFileItem.downloadTask cancel];
-               
-                // callback to update UI
-                if (downloadFileItem.infoFileDownloadBlock) {
+                if (downloadFileItem.downloadItemStatus == DownloadItemStatusPending) {
                     
-                    dispatch_async(dispatch_get_main_queue(), ^(void) {
-                        
-                        downloadFileItem.infoFileDownloadBlock(downloadFileItem);
-                    });
+                    nextDownloadFileItem = downloadFileItem;
+                    return;
                 }
-                
-                _resumeDownloadTasks -= 1;
-                [_resumeDownloadItems removeObject:downloadFileItem];
-            }
+            }];
+            
+            [nextDownloadFileItem.downloadTask resume];
+            _currentActiveDownloadTasks += 1;
+            _pendingDownloadTasks -= 1;
         }
     }
 }
@@ -388,15 +380,23 @@
 
 - (void)pauseDownLoadForUrl:(NSString *)fileIdentifier {
     
-    DownloadFileItem* downloadFileItem = [_currentActiveDownloadItems getObjectForKey:fileIdentifier];
-    NSLog(@"%ld",downloadFileItem.downloadTask.state);
+    NSPredicate* predicate = [NSPredicate predicateWithFormat:@"identifier contains[cd] %@", fileIdentifier];
+    DownloadFileItem* downloadFileItem = [_downloadFileItems filteredArrayUsingPredicate:predicate][0];
     
     if (downloadFileItem) {
         
+        if (downloadFileItem.downloadItemStatus == DownloadItemStatusPending) {
+            
+            _pendingDownloadTasks -= 1;
+        } else if (downloadFileItem.downloadItemStatus == DownloadItemStatusStarted) {
+            
+            _currentActiveDownloadTasks -= 1;
+            [downloadFileItem.downloadTask suspend];
+        }
         // pause currentTask running
-        [downloadFileItem.downloadTask suspend];
         downloadFileItem.downloadItemStatus = DownloadItemStatusPaused;
-       
+        _resumeDownloadTasks += 1;
+        
         // callback to update UI
         if (downloadFileItem.infoFileDownloadBlock) {
             
@@ -405,53 +405,25 @@
                 downloadFileItem.infoFileDownloadBlock(downloadFileItem);
             });
         }
-        // add into resumeList
-        _resumeDownloadTasks += 1;
-        [_resumeDownloadItems addObject:downloadFileItem];
         
-        // remove out of activeList
-        _currentActiveDownloadTasks -= 1;
-        [_currentActiveDownloadItems removeObjectForkey:fileIdentifier];
-        
-        // check PendingList exits -> run next task.
-        if (_pendingDownloadItems.count > 0) {
+        if (_pendingDownloadTasks > 0 && _currentActiveDownloadTasks < _currentDownloadMaximum) {
             
-            DownloadFileItem* nextDownloadFileItem = [_pendingDownloadItems objectAtIndex:0];
-            nextDownloadFileItem.downloadItemStatus = DownloadItemStatusStarted;
-            [nextDownloadFileItem.downloadTask resume];
-            _currentActiveDownloadTasks += 1;
-            [_currentActiveDownloadItems setObject:nextDownloadFileItem forKey:nextDownloadFileItem.identifier];
+            __block DownloadFileItem* nextDownloadFileItem;
             
-            //remove out of pendingList
-            _pendingDownloadTasks -= 1;
-            [_pendingDownloadItems removeObject:nextDownloadFileItem];
-        }
-    } else {
-        
-        // pause pending Task
-        // get it and change status
-        NSPredicate* predicate = [NSPredicate predicateWithFormat:@"identifier contains[cd] %@", fileIdentifier];
-        
-        if ([_pendingDownloadItems filteredArrayUsingPredicate:predicate].count > 0) {
-            
-            DownloadFileItem* pendingDownloadFileItem = [_pendingDownloadItems filteredArrayUsingPredicate:predicate][0];
-            [pendingDownloadFileItem.downloadTask suspend];
-            pendingDownloadFileItem.downloadItemStatus = DownloadItemStatusPaused;
-            // callback to update UI
-            if (pendingDownloadFileItem.infoFileDownloadBlock) {
+            [_downloadFileItems enumerateObjectsUsingBlock:^(id object, NSUInteger idx, BOOL* stop) {
                 
-                dispatch_async(dispatch_get_main_queue(), ^(void) {
+                DownloadFileItem* downloadFileItem = object;
+                
+                if (downloadFileItem.downloadItemStatus == DownloadItemStatusPending) {
                     
-                    pendingDownloadFileItem.infoFileDownloadBlock(pendingDownloadFileItem);
-                });
-            }
-            // add into resumeList
-            _resumeDownloadTasks += 1;
-            [_resumeDownloadItems addObject:pendingDownloadFileItem];
+                    _pendingDownloadTasks -= 1;
+                    nextDownloadFileItem = downloadFileItem;
+                    return;
+                }
+            }];
             
-            //remove out of pendingList
-            _pendingDownloadTasks -= 1;
-            [_pendingDownloadItems removeObject:pendingDownloadFileItem];
+            _currentActiveDownloadTasks += 1;
+            [nextDownloadFileItem.downloadTask resume];
         }
     }
 }
@@ -461,40 +433,45 @@
 - (void)resumeDownLoadForUrl:(NSString *)fileIdentifier {
     
     NSPredicate* predicate = [NSPredicate predicateWithFormat:@"identifier contains[cd] %@", fileIdentifier];
-    
-    if ([_resumeDownloadItems filteredArrayUsingPredicate:predicate].count > 0) {
+    DownloadFileItem* downloadFileItem = [_downloadFileItems filteredArrayUsingPredicate:predicate][0];
+
+    if (downloadFileItem && _resumeDownloadTasks > 0) {
         
-        if (_currentActiveDownloadItems.count >= _currentDownloadMaximum) {
+        // stop task when currentTaskDownload more max
+        if (_currentActiveDownloadTasks >= _currentDownloadMaximum) {
             
-            // stop task frist and start new task.
-            DownloadFileItem* currentActiveTask = [_currentActiveDownloadItems getFristObject];
-            currentActiveTask.downloadItemStatus =  DownloadItemStatusPaused;
-            [currentActiveTask.downloadTask suspend];
+            __block DownloadFileItem* pauseDownloadFileItem;
             
+            [_downloadFileItems enumerateObjectsUsingBlock:^(id object, NSUInteger idx, BOOL* stop) {
+                
+                DownloadFileItem* downloadFileItem1 = object;
+                
+                if (downloadFileItem1.downloadItemStatus == DownloadItemStatusStarted) {
+                    
+                    _currentActiveDownloadTasks -= 1;
+                    pauseDownloadFileItem = downloadFileItem1;
+                    return;
+                }
+            }];
+            
+            pauseDownloadFileItem.downloadItemStatus = DownloadItemStatusPaused;
+            [pauseDownloadFileItem.downloadTask suspend];
+            _resumeDownloadTasks += 1;
             // callback to update UI
-            if (currentActiveTask.infoFileDownloadBlock) {
+            if (pauseDownloadFileItem.infoFileDownloadBlock) {
                 
                 dispatch_async(dispatch_get_main_queue(), ^(void) {
                     
-                    currentActiveTask.infoFileDownloadBlock(currentActiveTask);
+                    pauseDownloadFileItem.infoFileDownloadBlock(pauseDownloadFileItem);
                 });
             }
-            _currentActiveDownloadTasks += 1;
-            [_currentActiveDownloadItems removeObjectForkey:currentActiveTask.identifier];
-            
-            // add into resumeList
-            _resumeDownloadTasks += 1;
-            [_resumeDownloadItems addObject:currentActiveTask];
         }
         
-        DownloadFileItem* downloadFileItem = [_resumeDownloadItems filteredArrayUsingPredicate:predicate][0];
+        // resume task
         downloadFileItem.downloadItemStatus = DownloadItemStatusStarted;
         [downloadFileItem.downloadTask resume];
-        
         _currentActiveDownloadTasks += 1;
-        [_currentActiveDownloadItems setObject:downloadFileItem forKey:downloadFileItem.identifier];
         _resumeDownloadTasks -= 1;
-        [_resumeDownloadItems removeObject:downloadFileItem];
     }
 }
 

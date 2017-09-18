@@ -188,22 +188,23 @@
     NSIndexPath* indexPath = [_model indexPathForObject:cellObject];
     DownloadFileTableViewCell* cell = [_tableView cellForRowAtIndexPath:indexPath];
     cellObject.identifier = downloadFileItem.identifier;
+    DownloaderItemStatus status = downloadFileItem.downloadItemStatus;
     
-    if (downloadFileItem.downloadItemStatus == DownloadItemStatusCompleted) {
+    if (status == DownloadItemStatusCompleted) {
         
         cellObject.taskStatus = DownloadItemStatusCompleted;
         dispatch_async(dispatch_get_main_queue(), ^ {
             
             [cell setModel:cellObject];
         });
-    } else if (downloadFileItem.downloadItemStatus == DownloadItemStatusPaused) {
+    } else if (status == DownloadItemStatusPaused) {
         
         cellObject.taskStatus = DownloadItemStatusPaused;
         dispatch_async(dispatch_get_main_queue(), ^ {
             
             [cell setModel:cellObject];
         });
-    } else if (downloadFileItem.downloadItemStatus == DownloadItemStatusCancelled) {
+    } else if (status == DownloadItemStatusCancelled) {
         
         cellObject.process = 0.0;
         cellObject.taskStatus = DownloadItemStatusCancelled;
@@ -212,9 +213,17 @@
             
             [cell setModel:cellObject];
         });
-    } else if (downloadFileItem.downloadItemStatus == DownloadItemStatusPending) {
+    } else if (status == DownloadItemStatusPending) {
         
         cellObject.taskStatus = DownloadItemStatusPending;
+        dispatch_async(dispatch_get_main_queue(), ^ {
+            
+            [cell setModel:cellObject];
+        });
+    } else if (status == DownloadItemStatusTimeOut) {
+        
+        cellObject.taskStatus = DownloadItemStatusTimeOut;
+        cellObject.taskDetail = @"";
         dispatch_async(dispatch_get_main_queue(), ^ {
             
             [cell setModel:cellObject];

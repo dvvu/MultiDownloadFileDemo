@@ -232,24 +232,6 @@
     
     if (identifier) {
         
-        NSPredicate* predicate = [NSPredicate predicateWithFormat:@"identifier contains[cd] %@", identifier];
-        
-        if ([[_downloadFileItems filteredArrayUsingPredicate:predicate] count] <= 0) {
-            
-            return;
-        }
-        
-        DownloadFileItem* downloadFileItem = [_downloadFileItems filteredArrayUsingPredicate:predicate][0];
-        
-        if (downloadFileItem.downloadItemStatus == DownloadItemStatusPaused) {
-            
-            [_downloadFileItems removeObject:downloadFileItem];
-            _resumeDownloadTasks -= 1;
-        } else {
-            
-            [_downloadFileItems removeObject:downloadFileItem];
-        }
-        
         switch ([error code]) {
                 
             case NSURLErrorCancelled:
@@ -278,6 +260,30 @@
                 break;
             default:
                 break;
+        }
+        
+        NSPredicate* predicate = [NSPredicate predicateWithFormat:@"identifier contains[cd] %@", identifier];
+        
+        if ([[_downloadFileItems filteredArrayUsingPredicate:predicate] count] <= 0) {
+            
+            return;
+        }
+        
+        DownloadFileItem* downloadFileItem = [_downloadFileItems filteredArrayUsingPredicate:predicate][0];
+        
+        if (downloadFileItem.downloadItemStatus == DownloadItemStatusPaused) {
+            
+            downloadFileItem.downloadItemStatus = DownloadItemStatusTimeOut;
+            [_downloadFileItems removeObject:downloadFileItem];
+            _resumeDownloadTasks -= 1;
+            
+            if (downloadFileItem.infoFileDownloadBlock) {
+                
+                dispatch_async(dispatch_get_main_queue(), ^(void) {
+                    
+                    downloadFileItem.infoFileDownloadBlock(downloadFileItem);
+                });
+            }
         }
     }
 }

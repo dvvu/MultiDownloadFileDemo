@@ -12,12 +12,16 @@
 
 @interface MultiDownloadFileManager : NSObject
 
+#pragma mark - sharedDefaultManager
 + (instancetype)sharedDefaultManager;
+
+#pragma mark - sharedBackgroundManager
 + (instancetype)sharedBackgroundManager;
 
-
+#pragma mark - backgroundTransferCompletionHandler
 @property (nonatomic) void(^backgroundTransferCompletionHandler)();
 
+#pragma mark - startDownloadFileFromURL
 - (void)startDownloadFileFromURL:(NSString *)sourceURL infoFileDownloadBlock:(InfoFileDownloadBlock)infoFileDownloadBlock callbackQueue:(dispatch_queue_t)queue;
 
 #pragma mark - cancelDownloadForUrl

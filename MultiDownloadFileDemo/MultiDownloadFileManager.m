@@ -228,7 +228,6 @@
         return;
     }
     
-    // check again.
     NSString* identifier = [NSString stringWithFormat:@"%lud",(unsigned long)[downloadTask taskIdentifier]];
     
     if (identifier) {
@@ -288,35 +287,44 @@
 - (void)startDownloadFileFromURL:(NSString *)sourceURL infoFileDownloadBlock:(InfoFileDownloadBlock)infoFileDownloadBlock callbackQueue:(dispatch_queue_t)queue {
     
     NSURL* url = [NSURL URLWithString:sourceURL];
-    NSURLRequest* request = [NSURLRequest requestWithURL:url];
-    NSURLSessionDownloadTask* downloadTask = [_downloadSession downloadTaskWithRequest:request];
     
-    DownloadFileItem* downloadFileItem = [[DownloadFileItem alloc] initWithActiveDownloadTask:downloadTask info:infoFileDownloadBlock callbackQueue:queue];
-    
-    downloadFileItem.startDate = [NSDate date];
-    downloadFileItem.sourceURL = sourceURL;
-    downloadFileItem.fileName = [sourceURL lastPathComponent];
-    downloadFileItem.downloadItemStatus = DownloadItemStatusPending;
-    
-    
-    if (_currentActiveDownloadTasks >= _currentDownloadMaximum) {
+    if ([self fileExistsForUrl:url]) {
         
-        _pendingDownloadTasks += 1;
+        NSLog(@"File Exits");
+    } else if ([self fileDownloadCompletedForUrl: sourceURL]) {
+        
+        NSLog(@"File is Downloading.......");
     } else {
         
-        _currentActiveDownloadTasks += 1;
-        [downloadFileItem.downloadTask resume];
-    }
-    
-    [_downloadFileItems addObject:downloadFileItem];
-    
-    // callback to update UI
-    if (downloadFileItem.infoFileDownloadBlock) {
+        NSURLRequest* request = [NSURLRequest requestWithURL:url];
+        NSURLSessionDownloadTask* downloadTask = [_downloadSession downloadTaskWithRequest:request];
         
-        dispatch_async(dispatch_get_main_queue(), ^(void) {
+        DownloadFileItem* downloadFileItem = [[DownloadFileItem alloc] initWithActiveDownloadTask:downloadTask info:infoFileDownloadBlock callbackQueue:queue];
+        
+        downloadFileItem.startDate = [NSDate date];
+        downloadFileItem.sourceURL = sourceURL;
+        downloadFileItem.fileName = [sourceURL lastPathComponent];
+        downloadFileItem.downloadItemStatus = DownloadItemStatusPending;
+        
+        if (_currentActiveDownloadTasks >= _currentDownloadMaximum) {
             
-            downloadFileItem.infoFileDownloadBlock(downloadFileItem);
-        });
+            _pendingDownloadTasks += 1;
+        } else {
+            
+            _currentActiveDownloadTasks += 1;
+            [downloadFileItem.downloadTask resume];
+        }
+        
+        [_downloadFileItems addObject:downloadFileItem];
+        
+        // callback to update UI
+        if (downloadFileItem.infoFileDownloadBlock) {
+            
+            dispatch_async(dispatch_get_main_queue(), ^(void) {
+                
+                downloadFileItem.infoFileDownloadBlock(downloadFileItem);
+            });
+        }
     }
 }
 
@@ -546,6 +554,26 @@
     return deleted;
 }
 
+#pragma mark - fileDownloadCompletedForUrl...
+
+- (BOOL)fileDownloadCompletedForUrl:(NSString *)sourceURL {
+    
+    __block BOOL retValue = NO;
+    
+    [_downloadFileItems enumerateObjectsUsingBlock:^(id object, NSUInteger idx, BOOL* stop) {
+        
+        DownloadFileItem* downloadFileItem = object;
+        
+        if ([downloadFileItem.sourceURL isEqualToString:sourceURL]) {
+            
+            retValue = YES;
+            return;
+        }
+    }];
+    
+    return retValue;
+}
+
 /* Condition to check file Exits */
 
 #pragma mark - fileExistsForUrl
@@ -579,13 +607,39 @@
     NSString* cachesDirectory = [paths objectAtIndex:0];
     NSLog(@"%@",cachesDirectory);
     
-    // if no directory was provided, we look by default in the base cached dir
     if ([[NSFileManager defaultManager] fileExistsAtPath:[[cachesDirectory stringByAppendingPathComponent:directoryName] stringByAppendingPathComponent:fileName]]) {
         
         exists = YES;
     }
     
     return exists;
+}
+
+#pragma mark - Background download
+
+- (void)URLSessionDidFinishEventsForBackgroundURLSession:(NSURLSession *)session {
+    
+    // Check if all download tasks have been finished.
+    [session getTasksWithCompletionHandler:^(NSArray* dataTasks, NSArray* uploadTasks, NSArray* downloadTasks) {
+        
+        if ([downloadTasks count] == 0) {
+            
+            if (_backgroundTransferCompletionHandler != nil) {
+                
+                // Copy locally the completion handler.
+                void(^completionHandler)() = _backgroundTransferCompletionHandler;
+                
+                [[NSOperationQueue mainQueue] addOperationWithBlock:^{
+                    
+                    // Call the completion handler to tell the system that there are no other background transfers.
+                    completionHandler();
+                }];
+                
+                // Make nil the backgroundTransferCompletionHandler.
+                _backgroundTransferCompletionHandler = nil;
+            }
+        }
+    }];
 }
 
 @end

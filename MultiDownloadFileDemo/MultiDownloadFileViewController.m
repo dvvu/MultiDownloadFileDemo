@@ -23,7 +23,6 @@
 
 @property (nonatomic) dispatch_queue_t multiDownloadItemsQueue;
 @property (nonatomic) MultiDownloadFileManager* downloadTasks;
-@property (nonatomic) NSMutableArray* validDownloadLinks;
 @property (nonatomic) ConnectionType connectionType;
 @property (nonatomic) int maxCurrentDownloadTasks;
 @property (nonatomic) NSDictionary* cellObjects;
@@ -62,8 +61,8 @@
     dispatch_async(_multiDownloadItemsQueue, ^ {
         
         _downloadLinks = @[FILE_URL,FILE_URL1,FILE_URL2,FILE_URL3,FILE_URL4,FILE_URL5,FILE_URL7];
-        _validDownloadLinks = [NSMutableArray array];
         _downloadTasks = [MultiDownloadFileManager sharedBackgroundManager];
+        _downloadTasks.currentDownloadMaximum = _maxCurrentDownloadTasks;
         
         NSMutableArray* objects = [NSMutableArray array];
         NSMutableDictionary* objectsDict = [[NSMutableDictionary alloc] init];
@@ -110,12 +109,11 @@
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
     
-    [UIView animateWithDuration:0.05 animations: ^ {
+    [UIView animateWithDuration:0.05 animations:^ {
         
         [tableView deselectRowAtIndexPath:indexPath animated:YES];
     }];
 }
-
 
 #pragma mark - connection
 
@@ -210,7 +208,10 @@
         cellObject.process = 0.0;
         cellObject.taskStatus = DownloadItemStatusCancelled;
         cellObject.taskDetail = @"";
-        [cell setModel:cellObject];
+        dispatch_async(dispatch_get_main_queue(), ^ {
+            
+            [cell setModel:cellObject];
+        });
     } else if (downloadFileItem.downloadItemStatus == DownloadItemStatusPending) {
         
         cellObject.taskStatus = DownloadItemStatusPending;

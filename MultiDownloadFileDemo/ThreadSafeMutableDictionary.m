@@ -26,7 +26,7 @@
     if (self) {
         
         _threadSafeDictionary = [[NSMutableDictionary alloc]init];
-        _threadSafeDictionaryQueue = dispatch_queue_create("threadSafeDictionar_Queue", DISPATCH_QUEUE_CONCURRENT);
+        _threadSafeDictionaryQueue = dispatch_queue_create("DICTIONARY_QUEUE", DISPATCH_QUEUE_CONCURRENT);
     }
 
     return self;

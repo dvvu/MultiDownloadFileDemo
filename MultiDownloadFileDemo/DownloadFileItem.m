@@ -18,15 +18,18 @@
 
 #pragma mark - initWithDownloaderTask
 
-- (instancetype)initWithActiveDownloadTask:(NSURLSessionDownloadTask *)downloadTask info:(InfoFileDownloadBlock)infoFileDownloadBlock callbackQueue:(dispatch_queue_t)queue{
+- (instancetype)initWithActiveDownloadTask:(NSURLSessionDownloadTask *)downloadTask info:(InfoFileDownloadBlock)infoFileDownloadBlock callbackQueue:(dispatch_queue_t)queue {
     
     self = [super init];
     
     if (self) {
         
-        _infoFileDownloadBlock = infoFileDownloadBlock;
-        _downloadTask = downloadTask;
+        _totalBytes = 0;
+        _byteRecives = 0;
+        _totalbyteRecives = 0;
         _callbackQueue = queue;
+        _downloadTask = downloadTask;
+        _infoFileDownloadBlock = infoFileDownloadBlock;
         _identifier = [NSString stringWithFormat:@"%lud",(unsigned long)downloadTask.taskIdentifier];
     }
     

@@ -26,7 +26,7 @@
     if (self) {
         
         _threadSafeArray = [[NSMutableArray alloc]init];
-        _threadSafeForArrayQueue = dispatch_queue_create("ThreadSafeForArray_Queue", DISPATCH_QUEUE_CONCURRENT);
+        _threadSafeForArrayQueue = dispatch_queue_create("ARRAY_QUEUE", DISPATCH_QUEUE_CONCURRENT);
     }
     return self;
 }
